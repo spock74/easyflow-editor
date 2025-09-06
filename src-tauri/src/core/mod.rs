@@ -1,3 +1,3 @@
-// Este módulo conterá a lógica principal da aplicação,
-// como comandos, gerenciamento de estado, etc.
+// src-tauri/src/core/mod.rs
+
 pub mod commands;

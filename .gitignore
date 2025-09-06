@@ -35,3 +35,7 @@ dist-ssr/
 # Arquivos de Debug e Teste
 *.rs.bk
 *.profraw
+
+# Artefatos de build adicionados
+easyflow-editor@0.1.0
+tauri
