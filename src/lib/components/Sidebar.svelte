@@ -67,8 +67,8 @@
 
 <style>
   .sidebar {
-    width: 260px;
-    min-width: 260px;
+    width: var(--sidebar-width);
+    min-width: var(--sidebar-width);
     background-color: var(--bg-sidebar);
     padding: 0.5rem;
     height: 100vh;

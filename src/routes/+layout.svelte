@@ -30,7 +30,6 @@
 
   <Sidebar bind:isSidebarOpen {isPinned} {togglePin} />
 
-  <!-- A classe `sidebar-pinned` agora controla o layout do conteúdo principal -->
   <main class="content-area" class:sidebar-pinned={isPinned}>
     <slot />
   </main>
@@ -60,8 +59,7 @@
     transition: margin-left 0.3s ease-in-out;
   }
 
-  /* Quando a sidebar está fixada, empurramos o conteúdo permanentemente */
   .content-area.sidebar-pinned {
-    margin-left: 260px; /* Corresponde à largura da sidebar */
+    margin-left: var(--sidebar-width);
   }
 </style>

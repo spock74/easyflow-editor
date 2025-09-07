@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { tick } from 'svelte';
   import BlockRenderer from './BlockRenderer.svelte';
   import type { Block } from '../types';
 
@@ -26,11 +27,47 @@
       document = newDocument;
     }
   }
+
+  async function handleDeleteBlock(event: CustomEvent<{ id: string }>) {
+    const { id } = event.detail;
+    const index = document.findIndex(b => b.id === id);
+
+    if (index !== -1) {
+      // Prevent deleting the last block
+      if (document.length === 1) {
+        return;
+      }
+
+      const newDocument = document.filter(b => b.id !== id);
+      
+      // Determine which block to focus next
+      const focusIndex = Math.max(0, index - 1);
+      const blockToFocus = newDocument[focusIndex];
+
+      if (blockToFocus) {
+        newDocument.forEach(b => b.autofocus = false);
+        blockToFocus.autofocus = true;
+      }
+      
+      document = newDocument;
+
+      // Wait for the DOM to update, then focus the correct element
+      await tick();
+      const elementToFocus = document.getElementById(blockToFocus.id);
+      if (elementToFocus) {
+        elementToFocus.focus();
+      }
+    }
+  }
 </script>
 
 <div class="editor-container">
   {#each document as block (block.id)}
-    <BlockRenderer {block} on:addBlockAfter={handleAddBlockAfter} />
+    <BlockRenderer 
+      {block} 
+      on:addBlockAfter={handleAddBlockAfter}
+      on:delete={handleDeleteBlock}
+    />
   {/each}
 </div>
 

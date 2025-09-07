@@ -1,10 +1,12 @@
 :root {
+  --sidebar-width: 260px;
   --bg-sidebar: #2F3034;
   --bg-main: #37383C;
   --text-primary: #EAEAEA;
   --text-secondary: #9B9A97;
   --hover-bg: #464749;
   --border-color: #4D4E50;
+  --danger-color: #FF5252;
 }
 
 html, body {
