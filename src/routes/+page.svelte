@@ -1,59 +1,64 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
-    import { invoke } from '@tauri-apps/api/core';
-    import { listen } from '@tauri-apps/api/event';
+  import BlockRenderer from '$lib/components/BlockRenderer.svelte';
+  import type { Block } from '$lib/types';
 
-    // Variável reativa para armazenar a string Base64 do frame
-    let frameSrc = '';
+  let document: Block[] = $state([
+    { id: '1', type: 'heading', content: 'Bem-vindo ao EasyFlow Editor' },
+    { id: '2', type: 'paragraph', content: 'Este é um parágrafo editável.' },
+    { id: '3', type: 'paragraph', content: 'Clique em mim para editar o texto.' }
+  ]);
 
-    onMount(async () => {
-        // 1. Inicia o listener para o evento 'new-frame' vindo do Rust
-        const unlisten = await listen('new-frame', (event) => {
-            // Atualiza a variável com o novo frame recebido
-            frameSrc = event.payload as string;
-        });
-
-        // 2. Chama o comando Rust para iniciar a captura da webcam
-        await invoke('start_stream');
-
-        // 3. Retorna a função de cleanup que será chamada quando o componente for destruído
-        return () => {
-            unlisten();
-        };
-    });
+  function handleBlockUpdate(event: CustomEvent<{ id: string; content: string }>) {
+    const { id, content } = event.detail;
+    const index = document.findIndex(b => b.id === id);
+    if (index !== -1) {
+      // Create a new array to trigger Svelte's reactivity
+      const newDocument = [...document];
+      newDocument[index] = { ...newDocument[index], content };
+      document = newDocument;
+    }
+  }
 </script>
 
 <main class="container">
-    <h1>Webcam Stream via Rust + OpenCV</h1>
-    <div class="stream-container">
-        {#if frameSrc}
-            <img src={frameSrc} alt="Webcam Stream" width="640" height="480" />
-        {:else}
-            <p>Aguardando stream da webcam...</p>
-        {/if}
-    </div>
+  <div class="editor">
+    {#each document as block (block.id)}
+      <BlockRenderer {block} on:update={handleBlockUpdate} />
+    {/each}
+  </div>
 </main>
 
 <style>
-    .container {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-    }
-    .stream-container {
-        width: 640px;
-        height: 480px;
-        border: 2px solid #333;
-        background-color: #000;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        color: white;
-    }
-    img {
-        max-width: 100%;
-        height: auto;
-    }
+  .container {
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+  }
+
+  .editor {
+    width: 100%;
+    max-width: 800px;
+    line-height: 1.6;
+  }
+
+  /* Estilos globais para os blocos editáveis */
+  :global(.block) {
+    outline: none;
+    cursor: text;
+  }
+
+  :global(.block:focus) {
+    background-color: #f0f0f0; /* Um leve destaque ao focar */
+  }
+
+  :global(h1.block) {
+    font-size: 2.2em;
+    font-weight: 700;
+    margin-bottom: 1em;
+  }
+
+  :global(p.block) {
+    font-size: 1.1em;
+    margin-bottom: 1em;
+  }
 </style>
