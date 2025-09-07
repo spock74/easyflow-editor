@@ -8,23 +8,25 @@
     { id: '3', type: 'paragraph', content: 'Clique em mim para editar o texto.' }
   ]);
 
-  function handleBlockUpdate(event: CustomEvent<{ id: string; content: string }>) {
-    const { id, content } = event.detail;
-    const index = document.findIndex(b => b.id === id);
-    if (index !== -1) {
-      // Create a new array to trigger Svelte's reactivity
-      const newDocument = [...document];
-      newDocument[index] = { ...newDocument[index], content };
-      document = newDocument;
-    }
+  function addBlock() {
+    const newBlock: Block = {
+      id: crypto.randomUUID(),
+      type: 'paragraph',
+      content: ''
+    };
+    document = [...document, newBlock];
   }
 </script>
 
 <main class="container">
   <div class="editor">
     {#each document as block (block.id)}
-      <BlockRenderer {block} on:update={handleBlockUpdate} />
+      <BlockRenderer {block} />
     {/each}
+
+    <div class="actions">
+      <button on:click={addBlock}>Adicionar Parágrafo</button>
+    </div>
   </div>
 </main>
 
@@ -39,6 +41,20 @@
     width: 100%;
     max-width: 800px;
     line-height: 1.6;
+  }
+
+  .actions {
+    text-align: center;
+    margin-top: 2rem;
+  }
+
+  button {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f0f0f0;
   }
 
   /* Estilos globais para os blocos editáveis */

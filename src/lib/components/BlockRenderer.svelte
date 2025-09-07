@@ -7,7 +7,7 @@
 </script>
 
 {#if block.type === 'heading'}
-  <HeadingBlock {block} on:update />
+  <HeadingBlock {block} />
 {:else if block.type === 'paragraph'}
-  <ParagraphBlock {block} on:update />
+  <ParagraphBlock {block} />
 {/if}
